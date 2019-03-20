@@ -3,14 +3,15 @@
     <script src="js/lib/angular.min.js"></script>
     <script src="js/app/catan.js"></script>
     <style>
-        polygon.mountain { fill: #909090; }   /* mountain */
-        polygon.pasture { fill: #80c060; }   /* pasture */
-        polygon.forest { fill: #207030; }   /* forest */
-        polygon.hill { fill: #a06030; }   /* hill */
-        polygon.field { fill: #f0d060; }   /* field */
-        polygon.sea { fill: #4090d0; }   /* sea */
-        polygon.dessert { fill: #ffffdd; }   /* dessert */
-        polygon.gold { fill: #ffff00; }   /* gold */
+        polygon.tile { stroke: white; stroke-width:3 }
+        polygon.tile.pasture { fill: url(#pasture); }   /* pasture */
+        polygon.tile.mountain { fill: url(#mountain); }   /* mountain */
+        polygon.tile.forest { fill: url(#forest); }   /* forest */
+        polygon.tile.hill { fill: url(#hill); }   /* hill */
+        polygon.tile.field { fill: url(#field); }   /* field */
+        polygon.tile.sea { fill: url(#sea); }   /* sea */
+        polygon.tile.dessert { fill: url(#dessert); }   /* dessert */
+        polygon.tile.gold { fill: url(#gold); }   /* gold */
     </style>
 </head>
 <body>
@@ -22,14 +23,25 @@
             </select>
             <br/>
             <input type="button" ng-click="regenerate()" value="Refresh"/><br/>
+            <input type="checkbox" name="enableDebug" value="Y" ng-model="enableDebug">Enable Debug</br>
             <figure id="catan-map">
                 <svg viewBox="-626.2177826491071 -626.2177826491071 1252.4355652982142 1252.4355652982142" style="max-width: 410px;"><g transform="rotate(-30)" fill="white" stroke="black">
+                <defs>
+                    <pattern id="pasture" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/pasture.png"/></pattern>
+                    <pattern id="mountain" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/mountain.png"/></pattern>
+                    <pattern id="forest" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/forest.png"/></pattern>
+                    <pattern id="hill" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/hill.png"/></pattern>
+                    <pattern id="field" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/field.png"/></pattern>
+                    <pattern id="sea" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/sea.png"/></pattern>
+                    <pattern id="dessert" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/dessert.png"/></pattern>
+                    <pattern id="gold" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/gold.png"/></pattern>
+                </defs>
                 <g class="grid">
                     <catan-tile ng-repeat="tile in map.tiles" tile="tile"/>
                 </g>    
                 </svg>
             </figure>
-            <p>{{ map }}</p>
+            <div ng-show="enableDebug"><p>{{map}}</p></div>
         </div>
     </div>
     <div>

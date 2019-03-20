@@ -26,15 +26,15 @@ class BoardType {
 }
 
 var boardTypes = [
-    new BoardType("org34", "Original (3-4 players)"),
-    new BoardType("org56", "Original (5-6 players)"),
+    new BoardType("Original34", "Original (3-4 players)"),
+    new BoardType("Original56", "Original (5-6 players)"),
 ];
 
-
-catanApp.service('MapGenerator', function () {
-    this.initialize = function (boardType) {
+class MapBuilder {
+    constructor() {};
+    build() {
         return { "size" : 3,
-            "boardType" : boardType,
+            "boardType" : this.boardType,
             "tiles" : [
                 new Tile( 0, 0, 0, TILE_FOREST),
                 new Tile( 0, 1, -1, TILE_DESSERT),
@@ -58,6 +58,40 @@ catanApp.service('MapGenerator', function () {
             ],
             "random": Math.random()
         };
+    }
+
+    static getInstance(boardType) {
+        //return new Original34MapBuilder();
+        //return new window[boardType + "MapBuilder"]();
+        console.log(boardType);
+        console.log("new " + boardType + "MapBuilder();");
+        return eval("new " + boardType + "MapBuilder();");
+        //return new MapBuilder();
+        //return eval("new MapBuilder();");
+    }
+}
+
+class Original34MapBuilder extends MapBuilder {
+    //constructor() {};
+}
+class Original56MapBuilder extends MapBuilder {
+    //constructor() {};
+}
+
+
+catanApp.service('MapGenerator', function () {
+    this.initialize = function() {
+        this.boardType = boardTypes[0].value;
+        return this;
+    }
+
+    this.setBoardType = function(boardType) {
+        this.boardType = boardType;
+        return this;
+    }
+
+    this.generate = function () {
+        return MapBuilder.getInstance(this.boardType).build();
     };
 });
 
@@ -65,10 +99,13 @@ catanApp.controller('MainCtrl', ['$scope', 'MapGenerator', function ($scope, Map
     $scope.title = "Catan Map Generator";
     $scope.boardTypes = boardTypes;
     $scope.boardType = boardTypes[0].value;
-    $scope.map = MapGen.initialize($scope.boardType);
+    $scope.map = MapGen.initialize().generate();
+    $scope.enableDebug = true;
 
     $scope.regenerate = function () {
-        $scope.map = MapGen.initialize($scope.boardType);
+        $scope.map = MapGen
+                        .setBoardType($scope.boardType)
+                        .generate();
     };
 }]);
 
@@ -80,7 +117,7 @@ catanApp.directive('catanTile', function () {
         tile: '=tile',
     },
     template: '<g transform="translate({{tile.x * 150}}, {{tile.y * -87 + tile.z * 87}})">'+
-                '<polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" class="{{tile.type}}"></polygon>' + 
+                '<polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" class="tile {{tile.type}}"></polygon>' + 
                 '</g>',
     link: function (scope, element, attrs) {
     }
