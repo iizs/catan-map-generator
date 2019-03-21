@@ -8,6 +8,9 @@ const TILE_FIELD = "field";
 const TILE_SEA = "sea";
 const TILE_DESSERT = "dessert";
 const TILE_GOLD = "gold";
+const TILE_UNKNOWN = "unknown";
+
+const PREF_RESOURCE_ADJACENCY = "resourceAdjacency";
 
 class Tile {
     constructor(x, y, z, type) {
@@ -18,70 +21,79 @@ class Tile {
     }
 }
 
-class BoardType {
-    constructor(v, n) {
+class NameValuePair {
+    constructor(n, v) {
         this.value = v;
         this.name = n;
     }
 }
 
 var boardTypes = [
-    new BoardType("Original34", "Original (3-4 players)"),
-    new BoardType("Original56", "Original (5-6 players)"),
+    new NameValuePair("Original (3-4 players)", "Original34"),
+    new NameValuePair("Original (5-6 players)", "Original56"),
+];
+
+var resourceAdjacencyOptions = [
+    new NameValuePair("None", "0"),
+    new NameValuePair("Normal", "1"),
+    new NameValuePair("Random", "10"),
 ];
 
 class MapBuilder {
-    constructor() {};
+    constructor(pref) {
+        this.tiles = [];
+        this.preferences = pref;
+    }
+
+    clear() {
+        while ( this.tiles.length > 0) { this.tiles.pop(); }
+    }
+
     build() {
         return { "size" : 3,
             "boardType" : this.boardType,
-            "tiles" : [
-                new Tile( 0, 0, 0, TILE_FOREST),
-                new Tile( 0, 1, -1, TILE_DESSERT),
-                new Tile( 1, 0, -1, TILE_HILL),
-                new Tile( 1, -1, 0, TILE_MOUNTAIN),
-                new Tile( 0, -1, 1, TILE_FIELD),
-                new Tile( -1, 0, 1, TILE_PASTURE),
-                new Tile( -1, 1, 0, TILE_GOLD),
-                new Tile( 0, 2, -2, TILE_SEA),
-                new Tile( 0, -2, 2, TILE_SEA),
-                new Tile( 2, 0, -2, TILE_SEA),
-                new Tile( 2, -2, 0, TILE_SEA),
-                new Tile( 2, -1, -1, TILE_SEA),
-                new Tile( 1, 1, -2, TILE_SEA),
-                new Tile( 1, -2, 1, TILE_SEA),
-                new Tile( -1, 2, -1, TILE_SEA),
-                new Tile( -1, -1, 2, TILE_SEA),
-                new Tile( -2, 2, 0, TILE_SEA),
-                new Tile( -2, 0, 2, TILE_SEA),
-                new Tile( -2, 1, 1, TILE_SEA),
-            ],
-            "random": Math.random()
+            "tiles" : this.tiles,
+            "random": Math.random(),
+            "preferences" : this.preferences,
         };
     }
 
-    static getInstance(boardType) {
-        //return new Original34MapBuilder();
-        //return new window[boardType + "MapBuilder"]();
-        console.log(boardType);
-        console.log("new " + boardType + "MapBuilder();");
-        return eval("new " + boardType + "MapBuilder();");
-        //return new MapBuilder();
-        //return eval("new MapBuilder();");
+    static getInstance(boardType, pref) {
+        //console.log(boardType);
+        return eval("new " + boardType + "MapBuilder(pref);");
+    }
+
+    static hex_distance(aq, ar, bq, br) {
+        return (Math.abs(aq-bq) + Math.abs(aq+ar-bq-br) + Math.abs(ar-br))/2;
     }
 }
 
 class Original34MapBuilder extends MapBuilder {
-    //constructor() {};
+    constructor(pref) {
+        super(pref);
+    };
+
+    build() {
+        this.clear();
+        for ( var q=-2; q<3; ++q ) {
+            for ( var r=-2; r<3; ++r ) {
+                if ( MapBuilder.hex_distance(0, 0, q, r) > 2 ) continue;
+                this.tiles.push( new Tile(q, r, -q -r, TILE_SEA) )
+            }
+        }
+
+        return super.build();
+    }
 }
 class Original56MapBuilder extends MapBuilder {
-    //constructor() {};
+    //constructor(pref) {};
 }
-
 
 catanApp.service('MapGenerator', function () {
     this.initialize = function() {
         this.boardType = boardTypes[0].value;
+        this.preferences = new Object();
+        this.preferences[PREF_RESOURCE_ADJACENCY] = resourceAdjacencyOptions[1].value;   // defaults to 1
         return this;
     }
 
@@ -90,8 +102,13 @@ catanApp.service('MapGenerator', function () {
         return this;
     }
 
+    this.setResourceAdjacency = function(v) {
+        this.preferences[PREF_RESOURCE_ADJACENCY] = v;
+        return this;
+    }
+
     this.generate = function () {
-        return MapBuilder.getInstance(this.boardType).build();
+        return MapBuilder.getInstance(this.boardType, this.preferences).build();
     };
 });
 
@@ -99,12 +116,18 @@ catanApp.controller('MainCtrl', ['$scope', 'MapGenerator', function ($scope, Map
     $scope.title = "Catan Map Generator";
     $scope.boardTypes = boardTypes;
     $scope.boardType = boardTypes[0].value;
-    $scope.map = MapGen.initialize().generate();
+    $scope.resourceAdjacencyOptions = resourceAdjacencyOptions;
+    $scope.resourceAdjacency = resourceAdjacencyOptions[1].value;   // defaults to 1
+
+    $scope.map = MapGen.initialize()
+                        .setResourceAdjacency($scope.resourceAdjacency)
+                        .generate();
     $scope.enableDebug = true;
 
     $scope.regenerate = function () {
         $scope.map = MapGen
                         .setBoardType($scope.boardType)
+                        .setResourceAdjacency($scope.resourceAdjacency)
                         .generate();
     };
 }]);

@@ -18,8 +18,14 @@
     <div ng-app="catanApp">
         <div ng-controller="MainCtrl">
             <h1>{{ title }}</h1>
+            <label>BoardType: </label>
             <select ng-model="boardType" />
                 <option ng-repeat="board in boardTypes" value="{{board.value}}">{{board.name}}</option>
+            </select>
+            <br/>
+            <label>Resource Adjacency: </label>
+            <select ng-model="resourceAdjacency" />
+                <option ng-repeat="opt in resourceAdjacencyOptions" value="{{opt.value}}">{{opt.name}}</option>
             </select>
             <br/>
             <input type="button" ng-click="regenerate()" value="Refresh"/><br/>
