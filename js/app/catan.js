@@ -102,8 +102,8 @@ catanApp.service('MapGenerator', function () {
         return this;
     }
 
-    this.setResourceAdjacency = function(v) {
-        this.preferences[PREF_RESOURCE_ADJACENCY] = v;
+    this.setPreferences = function(v) {
+        this.preferences = v;
         return this;
     }
 
@@ -117,17 +117,18 @@ catanApp.controller('MainCtrl', ['$scope', 'MapGenerator', function ($scope, Map
     $scope.boardTypes = boardTypes;
     $scope.boardType = boardTypes[0].value;
     $scope.resourceAdjacencyOptions = resourceAdjacencyOptions;
-    $scope.resourceAdjacency = resourceAdjacencyOptions[1].value;   // defaults to 1
+    $scope.preferences = new Object();
+    $scope.preferences[PREF_RESOURCE_ADJACENCY] = resourceAdjacencyOptions[1].value;   // defaults to 1
 
     $scope.map = MapGen.initialize()
-                        .setResourceAdjacency($scope.resourceAdjacency)
+                        .setPreferences($scope.preferences)
                         .generate();
     $scope.enableDebug = true;
 
     $scope.regenerate = function () {
         $scope.map = MapGen
                         .setBoardType($scope.boardType)
-                        .setResourceAdjacency($scope.resourceAdjacency)
+                        .setPreferences($scope.preferences)
                         .generate();
     };
 }]);
