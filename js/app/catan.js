@@ -17,6 +17,8 @@ class Tile {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.q = x;
+        this.r = y;
         this.type = type;
     }
 }
@@ -75,12 +77,49 @@ class Original34MapBuilder extends MapBuilder {
 
     build() {
         this.clear();
+
+        var tile = null;
+        var tilemap = [];
         for ( var q=-2; q<3; ++q ) {
+            tilemap[q+2] = [];
             for ( var r=-2; r<3; ++r ) {
                 if ( MapBuilder.hex_distance(0, 0, q, r) > 2 ) continue;
-                this.tiles.push( new Tile(q, r, -q -r, TILE_SEA) )
+                tile = new Tile(q, r, -q -r, TILE_UNKNOWN);
+                this.tiles.push( tile );
+                tilemap[q+2][r+2] = tile;
             }
         }
+        var tilestack = [
+            TILE_MOUNTAIN, TILE_MOUNTAIN, TILE_MOUNTAIN,
+            TILE_HILL, TILE_HILL, TILE_HILL,
+            TILE_FOREST, TILE_FOREST, TILE_FOREST, TILE_FOREST, 
+            TILE_PASTURE, TILE_PASTURE, TILE_PASTURE, TILE_PASTURE, 
+            TILE_FIELD, TILE_FIELD, TILE_FIELD, TILE_FIELD,
+            TILE_DESSERT,
+        ];
+        tilestack.sort(function() { return 0.5-Math.random();});
+
+        this.tiles.forEach(function(tile){
+            tile.type = tilestack.pop();
+        });
+
+        /*
+        do { 
+            q = Math.floor(Math.random() * 5 - 2);
+            r = Math.floor(Math.random() * 5 - 2);
+        } while ( MapBuilder.hex_distance(0, 0, q, r) > 2 );
+        */
+
+        //tile = tilemap[q+2][r+2].type = TILE_DESSERT;
+        /*
+        this.tiles.some(function(tile){
+            if ( q == tile.q && r == tile.r ) {
+                tile.type = TILE_DESSERT;
+                return true;
+            } 
+            return false;
+        });
+        */
 
         return super.build();
     }
