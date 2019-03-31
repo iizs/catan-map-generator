@@ -215,7 +215,7 @@ catanApp.controller('MainCtrl', ['$scope', 'MapGenerator', function ($scope, Map
     $scope.map = MapGen.initialize()
                         .setPreferences($scope.preferences)
                         .generate();
-    $scope.enableDebug = true;
+    $scope.enableDebug = false;
 
     $scope.regenerate = function () {
         $scope.map = MapGen
