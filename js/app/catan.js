@@ -151,12 +151,17 @@ class Original34MapBuilder extends MapBuilder {
     }
 
     build() {
-        // make tile base arrangement as all unknown
+        // make tile base arrangement as all unknown & sea
         this.clear();
-        for ( var q=-2; q<3; ++q ) {
-            for ( var r=-2; r<3; ++r ) {
-                if ( MapBuilder.hex_distance(0, 0, q, r) > 2 ) continue;
-                this.tiles.push( new Tile(q, r, -q -r, TILE_UNKNOWN) );
+        for ( var q=-3; q<4; ++q ) {
+            for ( var r=-3; r<4; ++r ) {
+                var distance = MapBuilder.hex_distance(0, 0, q, r);
+                if ( distance > 3 ) { continue; }
+                if ( distance == 3 ) {
+                    this.tiles.push( new Tile(q, r, -q -r, TILE_SEA) );
+                } else {
+                    this.tiles.push( new Tile(q, r, -q -r, TILE_UNKNOWN) );
+                }
             }
         }
 
