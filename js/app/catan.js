@@ -60,6 +60,12 @@ class MapBuilder {
         };
     }
 
+    getTile(q, r) {
+        return this.tiles.find(function(tile){
+            return (tile.q == q && tile.r == r);
+        });
+    }
+
     static getInstance(boardType, pref) {
         //console.log(boardType);
         return eval("new " + boardType + "MapBuilder(pref);");
@@ -76,17 +82,14 @@ class Original34MapBuilder extends MapBuilder {
     };
 
     build() {
+        // make tile base arrangement as all unknown
         this.clear();
-
         var tile = null;
-        var tilemap = [];
         for ( var q=-2; q<3; ++q ) {
-            tilemap[q+2] = [];
             for ( var r=-2; r<3; ++r ) {
                 if ( MapBuilder.hex_distance(0, 0, q, r) > 2 ) continue;
                 tile = new Tile(q, r, -q -r, TILE_UNKNOWN);
                 this.tiles.push( tile );
-                tilemap[q+2][r+2] = tile;
             }
         }
         var tilestack = [
@@ -121,6 +124,8 @@ class Original34MapBuilder extends MapBuilder {
         });
         */
 
+        console.log( this.getTile(0,0));
+        console.log( this.getTile(0,1));
         return super.build();
     }
 }
