@@ -60,8 +60,8 @@ class MapBuilder {
         };
     }
 
-    getTile(q, r) {
-        return this.tiles.find(function(tile){
+    getTile(tiles, q, r) {
+        return tiles.find(function(tile){
             return (tile.q == q && tile.r == r);
         });
     }
@@ -81,17 +81,68 @@ class Original34MapBuilder extends MapBuilder {
         super(pref);
     };
 
+    isValidPlacement(tiles) {
+        return true;
+    }
+
+    tryPlacement(tiles, availableTiles) {
+        if ( ! this.isValidPlacement(tiles) ) {
+            return [];
+        }
+
+        if ( Object.values(availableTiles).every(function(val){ return val==0; }) ) {
+            // All tiles placed correctly
+            return tiles;
+        }
+
+        // try to place one more tile
+        var tileTypes = Object.keys(availableTiles).sort(function() { return 0.5-Math.random();});
+        var newTiles = [];
+        var newAvailableTiles = {};
+        for ( var i=0; i < tileTypes.length; ++i ) {
+            if ( availableTiles[ tileTypes[i] ] == 0 ) {
+                // no more tiles of this type left
+                continue;
+            }
+
+            angular.copy(availableTiles, newAvailableTiles);    // deep copy of availableTiles
+            angular.copy(tiles, newTiles);  // deep copy of tiles
+
+            var nextTile = newTiles.find(function(tile){ return tile.type == TILE_UNKNOWN; } );
+            nextTile.type = tileTypes[i];
+            newAvailableTiles[ tileTypes[i] ] = availableTiles[ tileTypes[i] ] - 1;
+
+            newTiles = this.tryPlacement(newTiles, newAvailableTiles);
+            if ( newTiles.length != 0 ) {
+                break;
+            }
+        }
+
+        return newTiles;
+    }
+
     build() {
         // make tile base arrangement as all unknown
         this.clear();
-        var tile = null;
         for ( var q=-2; q<3; ++q ) {
             for ( var r=-2; r<3; ++r ) {
                 if ( MapBuilder.hex_distance(0, 0, q, r) > 2 ) continue;
-                tile = new Tile(q, r, -q -r, TILE_UNKNOWN);
-                this.tiles.push( tile );
+                this.tiles.push( new Tile(q, r, -q -r, TILE_UNKNOWN) );
             }
         }
+
+        var availableTiles = {};
+        availableTiles[ TILE_MOUNTAIN ] =  3;
+        availableTiles[ TILE_HILL ] =  3;
+        availableTiles[ TILE_FOREST ] =  4;
+        availableTiles[ TILE_PASTURE ] =  4;
+        availableTiles[ TILE_FIELD ] =  4;
+        availableTiles[ TILE_DESSERT ] =  1;
+
+        this.tiles = this.tryPlacement(this.tiles, availableTiles);
+        //console.log(Object.keys(availableTiles));
+        //console.log(Object.values(availableTiles).every(function(x){return x>0;}));
+        /*
         var tilestack = [
             TILE_MOUNTAIN, TILE_MOUNTAIN, TILE_MOUNTAIN,
             TILE_HILL, TILE_HILL, TILE_HILL,
@@ -105,6 +156,7 @@ class Original34MapBuilder extends MapBuilder {
         this.tiles.forEach(function(tile){
             tile.type = tilestack.pop();
         });
+        */
 
         /*
         do { 
@@ -124,8 +176,8 @@ class Original34MapBuilder extends MapBuilder {
         });
         */
 
-        console.log( this.getTile(0,0));
-        console.log( this.getTile(0,1));
+        //console.log( this.getTile(0,0));
+        //console.log( this.getTile(0,1));
         return super.build();
     }
 }
