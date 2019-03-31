@@ -36,9 +36,9 @@ var boardTypes = [
 ];
 
 var resourceAdjacencyOptions = [
-    new NameValuePair("None", "0"),
-    new NameValuePair("Normal", "1"),
-    new NameValuePair("Random", "10"),
+    new NameValuePair("None", "0"),     // no same resources can be adjanent
+    new NameValuePair("Normal", "1"),   // max. 1 same resources can be adjanent
+    new NameValuePair("Random", "6"),   // max. 6 == no restrictions on resource adjacency
 ];
 
 class MapBuilder {
@@ -60,7 +60,7 @@ class MapBuilder {
         };
     }
 
-    getTile(tiles, q, r) {
+    static getTile(tiles, q, r) {
         return tiles.find(function(tile){
             return (tile.q == q && tile.r == r);
         });
@@ -82,11 +82,42 @@ class Original34MapBuilder extends MapBuilder {
     };
 
     isValidPlacement(tiles) {
-        return true;
+        //lazy evaluation
+        //if ( this.preferences[ PREF_RESOURCE_ADJACENCY ] == 
+        var preferences = this.preferences; // without this, this.preferences is invisible from tiles.every()
+        var adjacentTiles = [ [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1], [-1, 0] ];
+        return tiles.every(function(tile) {
+            // TILE_UNKNOWN does not affect resource adjacency
+            if ( tile.type == TILE_UNKNOWN || tile.type == TILE_SEA ) {
+                return true;
+            }
+
+            var cnt = 0;
+            for ( var i=0; i<adjacentTiles.length; ++i ) {
+                var adjacentTile = MapBuilder.getTile( tiles, 
+                                                        tile.q + adjacentTiles[i][0], 
+                                                        tile.r + adjacentTiles[i][1] );
+                // no tile at this coord.
+                if ( adjacentTile == null ) { 
+                    continue;
+                }
+
+                if ( adjacentTile.type == tile.type ) {
+                    ++cnt;
+                }
+            }
+
+            if ( cnt > preferences[ PREF_RESOURCE_ADJACENCY ] ) {
+                return false;
+            }
+
+            return true;
+        });
     }
 
     tryPlacement(tiles, availableTiles) {
         if ( ! this.isValidPlacement(tiles) ) {
+            // wrong placement
             return [];
         }
 
