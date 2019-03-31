@@ -82,8 +82,6 @@ class Original34MapBuilder extends MapBuilder {
     };
 
     isValidPlacement(tiles) {
-        //lazy evaluation
-        //if ( this.preferences[ PREF_RESOURCE_ADJACENCY ] == 
         var preferences = this.preferences; // without this, this.preferences is invisible from tiles.every()
         var adjacentTiles = [ [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1], [-1, 0] ];
         return tiles.every(function(tile) {
@@ -171,44 +169,6 @@ class Original34MapBuilder extends MapBuilder {
         availableTiles[ TILE_DESSERT ] =  1;
 
         this.tiles = this.tryPlacement(this.tiles, availableTiles);
-        //console.log(Object.keys(availableTiles));
-        //console.log(Object.values(availableTiles).every(function(x){return x>0;}));
-        /*
-        var tilestack = [
-            TILE_MOUNTAIN, TILE_MOUNTAIN, TILE_MOUNTAIN,
-            TILE_HILL, TILE_HILL, TILE_HILL,
-            TILE_FOREST, TILE_FOREST, TILE_FOREST, TILE_FOREST, 
-            TILE_PASTURE, TILE_PASTURE, TILE_PASTURE, TILE_PASTURE, 
-            TILE_FIELD, TILE_FIELD, TILE_FIELD, TILE_FIELD,
-            TILE_DESSERT,
-        ];
-        tilestack.sort(function() { return 0.5-Math.random();});
-
-        this.tiles.forEach(function(tile){
-            tile.type = tilestack.pop();
-        });
-        */
-
-        /*
-        do { 
-            q = Math.floor(Math.random() * 5 - 2);
-            r = Math.floor(Math.random() * 5 - 2);
-        } while ( MapBuilder.hex_distance(0, 0, q, r) > 2 );
-        */
-
-        //tile = tilemap[q+2][r+2].type = TILE_DESSERT;
-        /*
-        this.tiles.some(function(tile){
-            if ( q == tile.q && r == tile.r ) {
-                tile.type = TILE_DESSERT;
-                return true;
-            } 
-            return false;
-        });
-        */
-
-        //console.log( this.getTile(0,0));
-        //console.log( this.getTile(0,1));
         return super.build();
     }
 }
