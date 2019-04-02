@@ -174,6 +174,22 @@ class Original34MapBuilder extends MapBuilder {
         availableTiles[ TILE_DESSERT ] =  1;
 
         this.tiles = this.tryPlacement(this.tiles, availableTiles);
+
+        // TODO : add number tiles
+        var numberToken = 2;
+        this.tiles.forEach(function(tile) {
+            if ( tile.type != TILE_DESSERT && TILE_SEA ) {
+                tile.numberToken = numberToken;
+                ++numberToken;
+                if ( numberToken > 12 ) { numberToken = 2; } 
+            }
+            if ( tile.type == TILE_DESSERT ) {
+                tile.robber = true;
+            }
+        });
+
+
+
         return super.build();
     }
 }
@@ -234,10 +250,10 @@ catanApp.directive('catanTile', function () {
     },
     template: '<g transform="translate({{tile.x * 150}}, {{tile.y * -87 + tile.z * 87}})">'+
                 '<polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" class="tile {{tile.type}}"></polygon>' + 
-                '<g ng-if="tile.type == \'dessert\'" transform="rotate(30)" class="robber">'+
-                '<circle ng-if="tile.type == \'dessert\'" cx="0" cy="-27" r="10" />' +
-                '<ellipse ng-if="tile.type == \'dessert\'" cx="0" cy="5" rx="16" ry="26" />' +
-                '<path ng-if="tile.type == \'dessert\'" d="M 20 32 A 20 20, 0, 0, 0, -20 32 Z" />' +
+                '<g ng-if="tile.robber" transform="rotate(30)" class="robber">'+
+                '<circle ng-if="tile.robber" cx="0" cy="-27" r="10" />' +
+                '<ellipse ng-if="tile.robber" cx="0" cy="5" rx="16" ry="26" />' +
+                '<path ng-if="tile.robber" d="M 20 32 A 20 20, 0, 0, 0, -20 32 Z" />' +
                 '</g>' +
                 '</g>',
     link: function (scope, element, attrs) {
