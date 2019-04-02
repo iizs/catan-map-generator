@@ -234,10 +234,10 @@ catanApp.directive('catanTile', function () {
     },
     template: '<g transform="translate({{tile.x * 150}}, {{tile.y * -87 + tile.z * 87}})">'+
                 '<polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" class="tile {{tile.type}}"></polygon>' + 
-                '<g transform="rotate(30)">'+
-                '<circle ng-if="tile.type == \'dessert\'" cx="0" cy="-27" r="10" stroke="black" stroke-width="3" fill="black" />' +
-                '<ellipse ng-if="tile.type == \'dessert\'" cx="0" cy="5" rx="16" ry="26" stroke="black" stroke-width="3" fill="black" />' +
-                '<path ng-if="tile.type == \'dessert\'" d="M 20 32 A 20 20, 0, 0, 0, -20 32 Z" stroke="black" stroke-width="3" fill="black" />' +
+                '<g ng-if="tile.type == \'dessert\'" transform="rotate(30)" class="robber">'+
+                '<circle ng-if="tile.type == \'dessert\'" cx="0" cy="-27" r="10" />' +
+                '<ellipse ng-if="tile.type == \'dessert\'" cx="0" cy="5" rx="16" ry="26" />' +
+                '<path ng-if="tile.type == \'dessert\'" d="M 20 32 A 20 20, 0, 0, 0, -20 32 Z" />' +
                 '</g>' +
                 '</g>',
     link: function (scope, element, attrs) {
