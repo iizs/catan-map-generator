@@ -178,7 +178,7 @@ class Original34MapBuilder extends MapBuilder {
         // TODO : add number tiles
         var numberToken = 2;
         this.tiles.forEach(function(tile) {
-            if ( tile.type != TILE_DESSERT && TILE_SEA ) {
+            if ( tile.type != TILE_DESSERT && tile.type != TILE_SEA ) {
                 tile.numberToken = numberToken;
                 ++numberToken;
                 if ( numberToken > 12 ) { numberToken = 2; } 
@@ -254,7 +254,12 @@ catanApp.directive('catanTile', function () {
                 '<circle ng-if="tile.robber" cx="0" cy="-27" r="10" />' +
                 '<ellipse ng-if="tile.robber" cx="0" cy="5" rx="16" ry="26" />' +
                 '<path ng-if="tile.robber" d="M 20 32 A 20 20, 0, 0, 0, -20 32 Z" />' +
-                '</g>' +
+                '</g>' + // robber
+                '<g ng-if="tile.numberToken > 0" transform="rotate(30)" class="number">'+
+                '<circle ng-if="tile.numberToken > 0" cx="0" cy="0" r="35"></circle>' +
+                '<text ng-if="tile.numberToken > 0 && tile.numberToken < 10" class="number-token-all number-token-{{tile.numberToken}}">{{tile.numberToken}}</text>' +
+                '<text ng-if="tile.numberToken >= 10" class="number-token-all number-token-{{tile.numberToken}}">{{tile.numberToken}}</text>' +
+                '</g>' + // number
                 '</g>',
     link: function (scope, element, attrs) {
     }
