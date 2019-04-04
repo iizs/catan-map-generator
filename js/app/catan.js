@@ -11,7 +11,7 @@ const TILE_GOLD = "gold";
 const TILE_UNKNOWN = "unknown";
 
 const PREF_RESOURCE_ADJACENCY = "resourceAdjacency";
-const HEX_DIRECTIONS = [ [1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1] ];
+const HEX_DIRECTIONS = [ [0, 1], [-1, 1], [-1, 0], [0, -1], [1, -1], [1, 0] ];
 
 class Tile {
     constructor(x, y, z, type) {
@@ -175,24 +175,33 @@ class Original34MapBuilder extends MapBuilder {
 
         this.tiles = this.tryPlacement(this.tiles, availableTiles);
 
-        // TODO : add number tiles
+        var pivot = Math.floor(Math.random() * HEX_DIRECTIONS.length);
+        var hex_directions = HEX_DIRECTIONS.slice(pivot).concat(HEX_DIRECTIONS.slice(0, pivot));
         var numberTokens = [ 5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11 ];
-        /*
-        var numberToken = 2;
-        this.tiles.forEach(function(tile) {
-            if ( tile.type != TILE_DESSERT && tile.type != TILE_SEA ) {
-                tile.numberToken = numberToken;
-                ++numberToken;
-                if ( numberToken > 12 ) { numberToken = 2; } 
+        for ( var radius = 2; radius>0; --radius) {
+            var tile = MapBuilder.getTile( this.tiles, hex_directions[4][0] * radius, hex_directions[4][1] * radius );
+
+            for ( var i=0; i<6; ++i ) {
+                for ( var j=0; j<radius; ++j ) {
+                    if ( tile.type != TILE_DESSERT ) { 
+                        tile.numberToken = numberTokens.shift();
+                    } else {
+                        tile.robber = true;
+                    }
+
+                    tile = MapBuilder.getTile( this.tiles, tile.q + hex_directions[i][0], tile.r + hex_directions[i][1] );
+                }
             }
-            if ( tile.type == TILE_DESSERT ) {
-                tile.robber = true;
-            }
-        });
-        */
+        }
 
-
-
+        // center tile
+        tile = MapBuilder.getTile( this.tiles, 0, 0 );
+        if ( tile.type != TILE_DESSERT ) { 
+            tile.numberToken = numberTokens.shift();
+        } else {
+            tile.robber = true;
+        }
+        
         return super.build();
     }
 }
