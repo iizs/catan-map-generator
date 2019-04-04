@@ -11,6 +11,7 @@ const TILE_GOLD = "gold";
 const TILE_UNKNOWN = "unknown";
 
 const PREF_RESOURCE_ADJACENCY = "resourceAdjacency";
+const HEX_DIRECTIONS = [ [1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1] ];
 
 class Tile {
     constructor(x, y, z, type) {
@@ -83,7 +84,6 @@ class Original34MapBuilder extends MapBuilder {
 
     isValidPlacement(tiles) {
         var preferences = this.preferences; // without this, this.preferences is invisible from tiles.every()
-        var adjacentTiles = [ [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1], [-1, 0] ];
         return tiles.every(function(tile) {
             // TILE_UNKNOWN does not affect resource adjacency
             if ( tile.type == TILE_UNKNOWN || tile.type == TILE_SEA ) {
@@ -91,10 +91,10 @@ class Original34MapBuilder extends MapBuilder {
             }
 
             var cnt = 0;
-            for ( var i=0; i<adjacentTiles.length; ++i ) {
+            for ( var i=0; i<HEX_DIRECTIONS.length; ++i ) {
                 var adjacentTile = MapBuilder.getTile( tiles, 
-                                                        tile.q + adjacentTiles[i][0], 
-                                                        tile.r + adjacentTiles[i][1] );
+                                                        tile.q + HEX_DIRECTIONS[i][0], 
+                                                        tile.r + HEX_DIRECTIONS[i][1] );
                 // no tile at this coord.
                 if ( adjacentTile == null ) { 
                     continue;
@@ -176,6 +176,8 @@ class Original34MapBuilder extends MapBuilder {
         this.tiles = this.tryPlacement(this.tiles, availableTiles);
 
         // TODO : add number tiles
+        var numberTokens = [ 5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11 ];
+        /*
         var numberToken = 2;
         this.tiles.forEach(function(tile) {
             if ( tile.type != TILE_DESSERT && tile.type != TILE_SEA ) {
@@ -187,6 +189,7 @@ class Original34MapBuilder extends MapBuilder {
                 tile.robber = true;
             }
         });
+        */
 
 
 
