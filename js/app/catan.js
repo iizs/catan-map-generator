@@ -178,29 +178,28 @@ class Original34MapBuilder extends MapBuilder {
         var pivot = Math.floor(Math.random() * HEX_DIRECTIONS.length);
         var hex_directions = HEX_DIRECTIONS.slice(pivot).concat(HEX_DIRECTIONS.slice(0, pivot));
         var numberTokens = [ 5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11 ];
+        var tiles = [];
         for ( var radius = 2; radius>0; --radius) {
             var tile = MapBuilder.getTile( this.tiles, hex_directions[4][0] * radius, hex_directions[4][1] * radius );
 
             for ( var i=0; i<6; ++i ) {
                 for ( var j=0; j<radius; ++j ) {
-                    if ( tile.type != TILE_DESSERT ) { 
-                        tile.numberToken = numberTokens.shift();
-                    } else {
-                        tile.robber = true;
-                    }
-
+                    tiles.push(tile);
                     tile = MapBuilder.getTile( this.tiles, tile.q + hex_directions[i][0], tile.r + hex_directions[i][1] );
                 }
             }
         }
 
         // center tile
-        tile = MapBuilder.getTile( this.tiles, 0, 0 );
-        if ( tile.type != TILE_DESSERT ) { 
-            tile.numberToken = numberTokens.shift();
-        } else {
-            tile.robber = true;
-        }
+        tiles.push( MapBuilder.getTile( this.tiles, 0, 0 ) );
+
+        tiles.forEach(function(tile) {
+            if ( tile.type != TILE_DESSERT ) { 
+                tile.numberToken = numberTokens.shift();
+            } else {
+                tile.robber = true;
+            }
+        });
         
         return super.build();
     }
