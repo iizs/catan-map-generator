@@ -11,6 +11,7 @@ const TILE_GOLD = "gold";
 const TILE_UNKNOWN = "unknown";
 
 const PREF_RESOURCE_ADJACENCY = "resourceAdjacency";
+const HEX_DIRECTIONS = [ [0, 1], [-1, 1], [-1, 0], [0, -1], [1, -1], [1, 0] ];
 
 class Tile {
     constructor(x, y, z, type) {
@@ -83,7 +84,6 @@ class Original34MapBuilder extends MapBuilder {
 
     isValidPlacement(tiles) {
         var preferences = this.preferences; // without this, this.preferences is invisible from tiles.every()
-        var adjacentTiles = [ [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1], [-1, 0] ];
         return tiles.every(function(tile) {
             // TILE_UNKNOWN does not affect resource adjacency
             if ( tile.type == TILE_UNKNOWN || tile.type == TILE_SEA ) {
@@ -91,10 +91,10 @@ class Original34MapBuilder extends MapBuilder {
             }
 
             var cnt = 0;
-            for ( var i=0; i<adjacentTiles.length; ++i ) {
+            for ( var i=0; i<HEX_DIRECTIONS.length; ++i ) {
                 var adjacentTile = MapBuilder.getTile( tiles, 
-                                                        tile.q + adjacentTiles[i][0], 
-                                                        tile.r + adjacentTiles[i][1] );
+                                                        tile.q + HEX_DIRECTIONS[i][0], 
+                                                        tile.r + HEX_DIRECTIONS[i][1] );
                 // no tile at this coord.
                 if ( adjacentTile == null ) { 
                     continue;
@@ -174,6 +174,33 @@ class Original34MapBuilder extends MapBuilder {
         availableTiles[ TILE_DESSERT ] =  1;
 
         this.tiles = this.tryPlacement(this.tiles, availableTiles);
+
+        var pivot = Math.floor(Math.random() * HEX_DIRECTIONS.length);
+        var hex_directions = HEX_DIRECTIONS.slice(pivot).concat(HEX_DIRECTIONS.slice(0, pivot));
+        var numberTokens = [ 5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11 ];
+        var tiles = [];
+        for ( var radius = 2; radius>0; --radius) {
+            var tile = MapBuilder.getTile( this.tiles, hex_directions[4][0] * radius, hex_directions[4][1] * radius );
+
+            for ( var i=0; i<6; ++i ) {
+                for ( var j=0; j<radius; ++j ) {
+                    tiles.push(tile);
+                    tile = MapBuilder.getTile( this.tiles, tile.q + hex_directions[i][0], tile.r + hex_directions[i][1] );
+                }
+            }
+        }
+
+        // center tile
+        tiles.push( MapBuilder.getTile( this.tiles, 0, 0 ) );
+
+        tiles.forEach(function(tile) {
+            if ( tile.type != TILE_DESSERT ) { 
+                tile.numberToken = numberTokens.shift();
+            } else {
+                tile.robber = true;
+            }
+        });
+        
         return super.build();
     }
 }
@@ -234,6 +261,16 @@ catanApp.directive('catanTile', function () {
     },
     template: '<g transform="translate({{tile.x * 150}}, {{tile.y * -87 + tile.z * 87}})">'+
                 '<polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" class="tile {{tile.type}}"></polygon>' + 
+                '<g ng-if="tile.robber" transform="rotate(30)" class="robber">'+
+                '<circle ng-if="tile.robber" cx="0" cy="-27" r="10" />' +
+                '<ellipse ng-if="tile.robber" cx="0" cy="5" rx="16" ry="26" />' +
+                '<path ng-if="tile.robber" d="M 20 32 A 20 20, 0, 0, 0, -20 32 Z" />' +
+                '</g>' + // robber
+                '<g ng-if="tile.numberToken > 0" transform="rotate(30)" class="number">'+
+                '<circle ng-if="tile.numberToken > 0" cx="0" cy="0" r="35"></circle>' +
+                '<text ng-if="tile.numberToken > 0 && tile.numberToken < 10" class="number-token-all number-token-{{tile.numberToken}}">{{tile.numberToken}}</text>' +
+                '<text ng-if="tile.numberToken >= 10" class="number-token-all number-token-{{tile.numberToken}}">{{tile.numberToken}}</text>' +
+                '</g>' + // number
                 '</g>',
     link: function (scope, element, attrs) {
     }
