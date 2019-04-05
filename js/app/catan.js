@@ -56,7 +56,7 @@ class MapBuilder {
     build() {
         return { "size" : 3,
             "boardType" : this.boardType,
-            "backgroundScale": this.backgroundScale,
+            "backgroundScale": this.backgroundScale,    // this makes board edge 
             "tiles" : this.tiles,
             "random": Math.random(),
             "preferences" : this.preferences,
