@@ -13,6 +13,7 @@
         polygon.tile.dessert { fill: url(#dessert); }   /* dessert */
         polygon.tile.gold { fill: url(#gold); }   /* gold */
         polygon.tile.unknown { fill: gray; }   /* unknown */
+        path.harbor { stroke: black; stroke-width:1; fill: url(#harbor); }   /* unknown */
         g.robber { fill: black; stroke: black; stroke-width: 3; }
         g.number { fill: #d0b060; stroke: black; stroke-width: 1; }
         text.number-token-all { font: bold 3em sans-serif; fill:black; transform: translate(-0.3em, 0.4em); }
@@ -51,6 +52,7 @@
                     <pattern id="sea" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/sea.png"/></pattern>
                     <pattern id="dessert" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/dessert.png"/></pattern>
                     <pattern id="gold" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/gold.png"/></pattern>
+                    <pattern id="harbor" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/harbor.png"/></pattern>
                 </defs>
                 <g transform="scale({{map.backgroundScale}} {{map.backgroundScale}}) rotate(30)">
                     <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" class="tile sea"></polygon>
@@ -58,6 +60,9 @@
                 <g class="grid">
                     <catan-tile ng-repeat="tile in map.tiles" tile="tile"/>
                 </g>    
+                <g transform="translate(0,437)">
+                    <path d="M 50,0 L-50,0 L-40,60 A 43,43 0 0 0 40,60 Z" class="harbor"/>
+                </g>
                 </svg>
             </figure>
             <div ng-show="enableDebug"><p>{{map}}</p></div>

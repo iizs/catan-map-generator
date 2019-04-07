@@ -156,7 +156,7 @@ class Original34MapBuilder extends MapBuilder {
         this.clear();
 
         // set background scale
-        this.backgroundScale = 5.5;
+        this.backgroundScale = 5.6;
 
         // make tile base arrangement as all unknown 
         for ( var q=-2; q<3; ++q ) {
