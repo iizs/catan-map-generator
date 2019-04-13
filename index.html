@@ -13,7 +13,13 @@
         polygon.tile.dessert { fill: url(#dessert); }   /* dessert */
         polygon.tile.gold { fill: url(#gold); }   /* gold */
         polygon.tile.unknown { fill: gray; }   /* unknown */
-        path.harbor { stroke: black; stroke-width:1; fill: url(#harbor); }   /* unknown */
+        path.harbor { stroke: black; stroke-width:1; fill: url(#harbor); }   /* harbor */
+        path.harbor.any { stroke: black; stroke-width:1; fill: url(#harbor-any); }   /* 3:1 harbor */
+        path.harbor.brick { stroke: black; stroke-width:1; fill: url(#harbor-brick); }   /* brick harbor */
+        path.harbor.wool { stroke: black; stroke-width:1; fill: url(#harbor-wool); }   /* wool harbor */
+        path.harbor.lumber { stroke: black; stroke-width:1; fill: url(#harbor-lumber); }   /* lumber harbor */
+        path.harbor.grain { stroke: black; stroke-width:1; fill: url(#harbor-grain); }   /* grain harbor */
+        path.harbor.ore { stroke: black; stroke-width:1; fill: url(#harbor-ore); }   /* ore harbor */
         g.robber { fill: black; stroke: black; stroke-width: 3; }
         g.number { fill: #d0b060; stroke: black; stroke-width: 1; }
         text.number-token-all { font: bold 3em sans-serif; fill:black; transform: translate(-0.3em, 0.4em); }
@@ -53,6 +59,12 @@
                     <pattern id="dessert" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/dessert.png"/></pattern>
                     <pattern id="gold" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/gold.png"/></pattern>
                     <pattern id="harbor" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/harbor.png"/></pattern>
+                    <pattern id="harbor-any" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/harbor_any.png"/></pattern>
+                    <pattern id="harbor-brick" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/harbor_brick.png"/></pattern>
+                    <pattern id="harbor-wool" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/harbor_wool.png"/></pattern>
+                    <pattern id="harbor-lumber" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/harbor_lumber.png"/></pattern>
+                    <pattern id="harbor-grain" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/harbor_grain.png"/></pattern>
+                    <pattern id="harbor-ore" patternUnits="objectBoundingBox" width="100%" height="100%"><image xlink:href="img/harbor_ore.png"/></pattern>
                 </defs>
                 <g transform="scale({{map.backgroundScale}} {{map.backgroundScale}}) rotate(30)">
                     <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" class="tile sea"></polygon>
