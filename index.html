@@ -72,9 +72,7 @@
                 <g class="grid">
                     <catan-tile ng-repeat="tile in map.tiles" tile="tile"/>
                 </g>    
-                <g transform="translate(0,437)">
-                    <path d="M 50,0 L-50,0 L-40,60 A 43,43 0 0 0 40,60 Z" class="harbor"/>
-                </g>
+                <catan-harbor ng-repeat="harbor in map.harbors" harbor="harbor"/>
                 </svg>
             </figure>
             <div ng-show="enableDebug"><p>{{map}}</p></div>

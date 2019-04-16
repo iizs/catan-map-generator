@@ -10,7 +10,17 @@ const TILE_DESSERT = "dessert";
 const TILE_GOLD = "gold";
 const TILE_UNKNOWN = "unknown";
 
+const HARBOR_ANY = "any";
+const HARBOR_GRAIN = "grain";
+const HARBOR_WOOL = "wool";
+const HARBOR_LUMBER = "lumber";
+const HARBOR_ORE = "ore";
+const HARBOR_BRICK = "brick";
+
 const PREF_RESOURCE_ADJACENCY = "resourceAdjacency";
+//       ( 0,-1 )   ( 1, -1 ) 
+//  (-1, 0 )  ( q, r )  ( 1, 0 )
+//       ( -1, 1 )   ( 0, 1 ) 
 const HEX_DIRECTIONS = [ [0, 1], [-1, 1], [-1, 0], [0, -1], [1, -1], [1, 0] ];
 
 class Tile {
@@ -20,6 +30,19 @@ class Tile {
         this.z = z;
         this.q = x;
         this.r = y;
+        this.type = type;
+    }
+}
+
+class Harbor {
+    constructor(tile, direction, type) {
+        this.tile = tile;
+        this.direction = direction;
+        for (var i=0; i<HEX_DIRECTIONS.length; ++i) {
+            if ( direction == HEX_DIRECTIONS[i] ) {
+                this.rotation = i * 60;
+            }
+        }
         this.type = type;
     }
 }
@@ -45,6 +68,7 @@ var resourceAdjacencyOptions = [
 class MapBuilder {
     constructor(pref) {
         this.tiles = [];
+        this.harbors = [];
         this.preferences = pref;
         this.backgroundScale = 5.5;
     }
@@ -58,6 +82,7 @@ class MapBuilder {
             "boardType" : this.boardType,
             "backgroundScale": this.backgroundScale,    // this makes board edge 
             "tiles" : this.tiles,
+            "harbors" : this.harbors,
             "random": Math.random(),
             "preferences" : this.preferences,
         };
@@ -177,6 +202,7 @@ class Original34MapBuilder extends MapBuilder {
 
         this.tiles = this.tryPlacement(this.tiles, availableTiles);
 
+        // place number tokens as original rule
         var pivot = Math.floor(Math.random() * HEX_DIRECTIONS.length);
         var hex_directions = HEX_DIRECTIONS.slice(pivot).concat(HEX_DIRECTIONS.slice(0, pivot));
         var numberTokens = [ 5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11 ];
@@ -191,8 +217,6 @@ class Original34MapBuilder extends MapBuilder {
                 }
             }
         }
-
-        // center tile
         tiles.push( MapBuilder.getTile( this.tiles, 0, 0 ) );
 
         tiles.forEach(function(tile) {
@@ -202,6 +226,16 @@ class Original34MapBuilder extends MapBuilder {
                 tile.robber = true;
             }
         });
+
+        // place harbors
+        this.harbors = [
+            new Harbor( MapBuilder.getTile( this.tiles, 1, 1 ), HEX_DIRECTIONS[0], HARBOR_BRICK ),
+            new Harbor( MapBuilder.getTile( this.tiles, -1, -2 ), HEX_DIRECTIONS[1], HARBOR_ORE ),
+            new Harbor( MapBuilder.getTile( this.tiles, -2, 2 ), HEX_DIRECTIONS[2], HARBOR_GRAIN ),
+            new Harbor( MapBuilder.getTile( this.tiles, 0, -2 ), HEX_DIRECTIONS[3], HARBOR_ANY ),
+            new Harbor( MapBuilder.getTile( this.tiles, 2, -2 ), HEX_DIRECTIONS[4], HARBOR_LUMBER ),
+            new Harbor( MapBuilder.getTile( this.tiles, 2, -1 ), HEX_DIRECTIONS[5], HARBOR_WOOL ),
+        ];
         
         return super.build();
     }
@@ -277,4 +311,19 @@ catanApp.directive('catanTile', function () {
     link: function (scope, element, attrs) {
     }
   };
+});
+
+catanApp.directive('catanHarbor', function() {
+    return {
+        restrict: 'E',
+        replace: true,
+        scope: {
+            harbor: '=harbor',
+        },
+        template: '<g transform="translate({{harbor.tile.x * 150}}, {{harbor.tile.y * -87 + harbor.tile.z * 87}}) rotate({{harbor.rotation}})">' +
+                  '<path d="M 50,0 L-50,0 L-40,60 A 43,43 0 0 0 40,60 Z" class="harbor {{harbor.type}}"/>' +
+                  '</g>',
+        link: function (scope, element, attrs) {
+        }
+    }
 });
