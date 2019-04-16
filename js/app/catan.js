@@ -29,7 +29,7 @@ class Tile {
         this.y = y;
         this.z = z;
         this.q = x;
-        this.r = y;
+        this.r = z;
         this.type = type;
     }
 }
@@ -188,7 +188,7 @@ class Original34MapBuilder extends MapBuilder {
             for ( var r=-2; r<3; ++r ) {
                 var distance = MapBuilder.hex_distance(0, 0, q, r);
                 if ( distance > 2 ) { continue; }
-                this.tiles.push( new Tile(q, r, -q -r, TILE_UNKNOWN) );
+                this.tiles.push( new Tile(q, -q -r, r, TILE_UNKNOWN) );
             }
         }
 
