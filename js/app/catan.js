@@ -230,7 +230,7 @@ class Original34MapBuilder extends MapBuilder {
         // place harbors
         this.harbors = [
             new Harbor( MapBuilder.getTile( this.tiles, 1, 1 ), HEX_DIRECTIONS[0], HARBOR_BRICK ),
-            new Harbor( MapBuilder.getTile( this.tiles, -1, -2 ), HEX_DIRECTIONS[1], HARBOR_ORE ),
+            new Harbor( MapBuilder.getTile( this.tiles, -1, 2 ), HEX_DIRECTIONS[1], HARBOR_ORE ),
             new Harbor( MapBuilder.getTile( this.tiles, -2, 2 ), HEX_DIRECTIONS[2], HARBOR_GRAIN ),
             new Harbor( MapBuilder.getTile( this.tiles, 0, -2 ), HEX_DIRECTIONS[3], HARBOR_ANY ),
             new Harbor( MapBuilder.getTile( this.tiles, 2, -2 ), HEX_DIRECTIONS[4], HARBOR_LUMBER ),
@@ -320,7 +320,7 @@ catanApp.directive('catanHarbor', function() {
         scope: {
             harbor: '=harbor',
         },
-        template: '<g transform="translate({{harbor.tile.x * 150}}, {{harbor.tile.y * -87 + harbor.tile.z * 87}}) rotate({{harbor.rotation}})">' +
+        template: '<g transform="translate({{(harbor.tile.x + harbor.direction[0]/2) * 150}}, {{(harbor.tile.y - (harbor.direction[0] + harbor.direction[1])/2) * -87 + (harbor.tile.z + harbor.direction[1]/2) * 87}}) rotate({{harbor.rotation}})">' +
                   '<path d="M 50,0 L-50,0 L-40,60 A 43,43 0 0 0 40,60 Z" class="harbor {{harbor.type}}"/>' +
                   '</g>',
         link: function (scope, element, attrs) {
