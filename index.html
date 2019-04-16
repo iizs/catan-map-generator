@@ -69,10 +69,10 @@
                 <g transform="scale({{map.backgroundScale}} {{map.backgroundScale}}) rotate(30)">
                     <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" class="tile sea"></polygon>
                 </g>
+                <catan-harbor ng-repeat="harbor in map.harbors" harbor="harbor"/>
                 <g class="grid">
                     <catan-tile ng-repeat="tile in map.tiles" tile="tile"/>
                 </g>    
-                <catan-harbor ng-repeat="harbor in map.harbors" harbor="harbor"/>
                 </svg>
             </figure>
             <div ng-show="enableDebug"><p>{{map}}</p></div>
