@@ -177,6 +177,37 @@ class Original34MapBuilder extends MapBuilder {
         return newTiles;
     }
 
+    getHarborLocations() {
+        return [
+            { tile: MapBuilder.getTile( this.tiles, 0, -2 ), direction: HEX_DIRECTIONS[3] },
+            { tile: MapBuilder.getTile( this.tiles, 1, -2 ), direction: HEX_DIRECTIONS[4] },
+            { tile: MapBuilder.getTile( this.tiles, 2, -1 ), direction: HEX_DIRECTIONS[4] },
+            { tile: MapBuilder.getTile( this.tiles, 2, 0 ), direction: HEX_DIRECTIONS[5] },
+            { tile: MapBuilder.getTile( this.tiles, 1, 1 ), direction: HEX_DIRECTIONS[0] },
+            { tile: MapBuilder.getTile( this.tiles, -1, 2 ), direction: HEX_DIRECTIONS[0] },
+            { tile: MapBuilder.getTile( this.tiles, -2, 2 ), direction: HEX_DIRECTIONS[1] },
+            { tile: MapBuilder.getTile( this.tiles, -2, 1 ), direction: HEX_DIRECTIONS[2] },
+            { tile: MapBuilder.getTile( this.tiles, -1, -1 ), direction: HEX_DIRECTIONS[2] },
+        ];
+    }
+
+    placeHarbors(locations, availableHarbors) {
+        var harbors = [];
+        var harbors_index = Object.keys(availableHarbors).sort(function() { return 0.5-Math.random();});
+
+        for ( var i=0; i<availableHarbors.length; ++i ) {
+            harbors.push( 
+                new Harbor( MapBuilder.getTile( this.tiles, locations[i].tile.q, locations[i].tile.r ),
+                            locations[i].direction, 
+                            availableHarbors[ harbors_index[i] ] 
+                )
+            );
+
+        }
+
+        return harbors;
+    }
+
     build() {
         this.clear();
 
@@ -228,15 +259,17 @@ class Original34MapBuilder extends MapBuilder {
         });
 
         // place harbors
-        this.harbors = [
-            new Harbor( MapBuilder.getTile( this.tiles, 1, 1 ), HEX_DIRECTIONS[0], HARBOR_BRICK ),
-            new Harbor( MapBuilder.getTile( this.tiles, -1, 2 ), HEX_DIRECTIONS[1], HARBOR_ORE ),
-            new Harbor( MapBuilder.getTile( this.tiles, -2, 2 ), HEX_DIRECTIONS[2], HARBOR_GRAIN ),
-            new Harbor( MapBuilder.getTile( this.tiles, 0, -2 ), HEX_DIRECTIONS[3], HARBOR_ANY ),
-            new Harbor( MapBuilder.getTile( this.tiles, 2, -2 ), HEX_DIRECTIONS[4], HARBOR_LUMBER ),
-            new Harbor( MapBuilder.getTile( this.tiles, 2, -1 ), HEX_DIRECTIONS[5], HARBOR_WOOL ),
+        var locations = this.getHarborLocations();
+        var availableHarbors = [
+            HARBOR_BRICK, 
+            HARBOR_GRAIN, 
+            HARBOR_WOOL, 
+            HARBOR_ORE, 
+            HARBOR_LUMBER, 
+            HARBOR_ANY, HARBOR_ANY, HARBOR_ANY, HARBOR_ANY 
         ];
-        
+        this.harbors = this.placeHarbors(locations, availableHarbors);
+
         return super.build();
     }
 }
